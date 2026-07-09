@@ -1,66 +1,56 @@
-﻿namespace SantosGit
+﻿using LeaveManagementAppService;
+using LeaveManagementModels;
+
+namespace SantosGit
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter Name of the Employee: ");
-            string empName = Console.ReadLine();
-
-            Console.WriteLine("Choose number reason of leave:");
-            Console.WriteLine("(1) Sick Leave - 10 days");
-            Console.WriteLine("(2) Vacation Leave - 10 days");
-            Console.WriteLine("(3) Paternity Leave - 7 days");
-            Console.WriteLine("(4) Maternity Leave - 107 days");
-
-            int reason = Convert.ToInt32(Console.ReadLine());
-
-            Console.WriteLine("Enter number of Days to leave: ");
+            LeaveAppService app = new LeaveAppService();
+            Console.Write("Employee Name: ");
+            string name = Console.ReadLine();
+            Console.WriteLine("1. Sick Leave");
+            Console.WriteLine("2. Vacation Leave");
+            Console.WriteLine("3. Paternity Leave");
+            Console.WriteLine("4. Maternity Leave");
+            int choice = Convert.ToInt32(Console.ReadLine());
+            Console.Write("Days to Leave: ");
             int days = Convert.ToInt32(Console.ReadLine());
-
-            int maxDays = 0;
-            string leaveType = "";
-
-            if (reason == 1)
+            Leave leave = new Leave();
+            leave.LeaveId = Guid.NewGuid();
+            leave.EmployeeName = name;
+            leave.DaysFiled = days;
+            switch (choice)
             {
-                maxDays = 10;
-                leaveType = "Sick Leave";
+                case 1:
+                    leave.LeaveType = "Sick Leave";
+                    leave.MaxDays = 10;
+                    break;
+                case 2:
+                    leave.LeaveType = "Vacation Leave";
+                    leave.MaxDays = 10;
+                    break;
+                case 3:
+                    leave.LeaveType = "Paternity Leave";
+                    leave.MaxDays = 7;
+                    break;
+                case 4:
+                    leave.LeaveType = "Maternity Leave";
+                    leave.MaxDays = 107;
+                    break;
             }
-            else if (reason == 2)
+            bool approved = app.FileLeave(leave);
+            Console.WriteLine();
+            if (approved)
             {
-                maxDays = 10;
-                leaveType = "Vacation Leave";
-            }
-            else if (reason == 3)
-            {
-                maxDays = 7;
-                leaveType = "Paternity Leave";
-            }
-            else if (reason == 4)
-            {
-                maxDays = 107;
-                leaveType = "Maternity Leave";
-            }
-            else
-            {
-                Console.WriteLine("Invalid choice.");
-            }
-
-            if (days > maxDays)
-            {
-                Console.WriteLine("Leave request denied. Exceeded allowed days.");
+                Console.WriteLine("Leave Approved!");
+                Console.WriteLine($"Remaining Days: {leave.RemainingDays}");
             }
             else
             {
-                int remaining = maxDays - days;
-
-                Console.WriteLine("\n--- Leave Summary ---");
-                Console.WriteLine("Employee Name: " + empName);
-                Console.WriteLine("Leave Type: " + leaveType);
-                Console.WriteLine("Days Filed: " + days);
-                Console.WriteLine("Remaining Leave Balance: " + remaining);
-                Console.WriteLine("Leave request approved.");
+                Console.WriteLine("Leave Denied!");
             }
+                }
         }
     }
-}
